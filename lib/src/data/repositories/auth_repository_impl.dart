@@ -26,4 +26,18 @@ class AuthRepositoryImpl implements AuthRepository {
       return Left(AppError(message: e.toString()));
     }
   }
+
+  @override
+  Future<Either<AppError, UserEntity>> getCurrentUser() async {
+    try {
+      final currentUser = await authRemoteDataSource.streamCurrentUser.first;
+      if (currentUser != null) {
+        return Right(currentUser);
+      } else {
+        return const Left(AppError(message: 'Failed to get current user'));
+      }
+    } catch (e) {
+      return Left(AppError(message: e.toString()));
+    }
+  }
 }

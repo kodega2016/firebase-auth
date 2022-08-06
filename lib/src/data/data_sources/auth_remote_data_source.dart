@@ -6,6 +6,7 @@ abstract class AuthRemoteDataSource {
     required String email,
     required String password,
   });
+  Stream<UserModel?> get streamCurrentUser;
 }
 
 class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
@@ -33,5 +34,18 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
       email: user.email,
       profilePicture: user.photoURL,
     );
+  }
+
+  @override
+  Stream<UserModel?> get streamCurrentUser {
+    return firebaseAuth.userChanges().map((event) {
+      if (event?.uid == null) return null;
+      return UserModel(
+        userID: event!.uid,
+        email: event.email,
+        name: event.displayName,
+        profilePicture: event.photoURL,
+      );
+    });
   }
 }

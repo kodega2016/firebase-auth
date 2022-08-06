@@ -1,4 +1,4 @@
-import 'package:firebaseauth/src/presentation/blocs/bloc/login_bloc.dart';
+import 'package:firebaseauth/src/presentation/blocs/login/login_bloc.dart';
 import 'package:firebaseauth/src/presentation/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
