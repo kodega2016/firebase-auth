@@ -8,3 +8,5 @@ abstract class AppEvent extends Equatable {
 }
 
 class AppLaunched extends AppEvent {}
+
+class LogoutBtnPressed extends AppEvent {}

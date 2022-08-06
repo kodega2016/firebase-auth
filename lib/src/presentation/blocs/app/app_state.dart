@@ -1,9 +1,14 @@
 part of 'app_bloc.dart';
 
-enum AuthState { uninitialized, authenticated, unauthenticated, authenticating }
+enum AuthenticationState {
+  uninitialized,
+  authenticated,
+  unauthenticated,
+  authenticating
+}
 
 class AppState extends Equatable {
-  final AuthState authState;
+  final AuthenticationState authState;
   final UserEntity? user;
 
   const AppState({

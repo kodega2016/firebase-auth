@@ -40,4 +40,34 @@ class AuthRepositoryImpl implements AuthRepository {
       return Left(AppError(message: e.toString()));
     }
   }
+
+  @override
+  Future<Either<AppError, void>> logout() async {
+    try {
+      await authRemoteDataSource.logout();
+      return const Right(null);
+    } catch (e) {
+      return Left(AppError(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<AppError, UserEntity>> signUpWithEmailAndPassword({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final user = await authRemoteDataSource.signUpEmailAndPassword(
+        name: name,
+        email: email,
+        password: password,
+      );
+      return Right(user);
+    } on FirebaseAuthException catch (e) {
+      return Left(AppError(message: e.message ?? ''));
+    } catch (e) {
+      return Left(AppError(message: e.toString()));
+    }
+  }
 }

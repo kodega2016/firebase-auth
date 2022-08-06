@@ -1,7 +1,7 @@
 import 'package:firebaseauth/src/di/get_it.dart';
 import 'package:firebaseauth/src/presentation/auth/auth_screen.dart';
 import 'package:firebaseauth/src/presentation/blocs/app/app_bloc.dart';
-import 'package:firebaseauth/src/presentation/blocs/login/login_bloc.dart';
+import 'package:firebaseauth/src/presentation/blocs/auth/auth_bloc.dart';
 import 'package:firebaseauth/src/presentation/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,20 +14,20 @@ class FirebaseAuthApp extends StatefulWidget {
 }
 
 class _FirebaseAuthAppState extends State<FirebaseAuthApp> {
-  late LoginBloc loginBloc;
+  late AuthBloc authBloc;
   late AppBloc appBloc;
 
   @override
   void initState() {
-    loginBloc = getIt<LoginBloc>();
-    appBloc = getIt<AppBloc>();
+    authBloc = getIt<AuthBloc>();
+    appBloc = authBloc.appBloc;
     appBloc.add(AppLaunched());
     super.initState();
   }
 
   @override
   void dispose() {
-    loginBloc.close();
+    authBloc.close();
     appBloc.close();
     super.dispose();
   }
@@ -40,20 +40,20 @@ class _FirebaseAuthAppState extends State<FirebaseAuthApp> {
           value: appBloc,
         ),
         BlocProvider.value(
-          value: loginBloc,
+          value: authBloc,
         ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primaryColor: Colors.brown,
-          appBarTheme: const AppBarTheme(backgroundColor: Colors.brown),
-          colorScheme:
-              ColorScheme.fromSwatch().copyWith(secondary: Colors.black),
+          scaffoldBackgroundColor: Colors.grey[200],
+          appBarTheme: const AppBarTheme(elevation: 1),
         ),
         home: BlocBuilder<AppBloc, AppState>(
+          // buildWhen: (previous, current) =>
+          //     current.authState == AuthenticationState.authenticated,
           builder: (context, state) {
-            if (state.authState == AuthState.authenticated) {
+            if (state.authState == AuthenticationState.authenticated) {
               return const HomeScreen();
             }
             return const AuthScreen();

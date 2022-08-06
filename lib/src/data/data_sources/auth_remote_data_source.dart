@@ -7,6 +7,13 @@ abstract class AuthRemoteDataSource {
     required String password,
   });
   Stream<UserModel?> get streamCurrentUser;
+  Future<void> logout();
+
+  Future<UserModel> signUpEmailAndPassword({
+    required String name,
+    required String email,
+    required String password,
+  });
 }
 
 class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
@@ -47,5 +54,35 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
         profilePicture: event.photoURL,
       );
     });
+  }
+
+  @override
+  Future<void> logout() async {
+    await firebaseAuth.signOut();
+  }
+
+  @override
+  Future<UserModel> signUpEmailAndPassword({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    final authResult = await firebaseAuth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    final user = authResult.user;
+    user?.updateDisplayName(name);
+    if (user == null) {
+      throw FirebaseAuthException(
+        code: 'FAILED_TO_SIGN_UP_WITH_EMAIL_AND_PASSWORD',
+      );
+    }
+    return UserModel(
+      userID: user.uid,
+      name: user.displayName,
+      email: user.email,
+      profilePicture: user.photoURL,
+    );
   }
 }

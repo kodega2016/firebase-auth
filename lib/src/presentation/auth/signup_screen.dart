@@ -1,24 +1,27 @@
-import 'package:firebaseauth/src/presentation/auth/signup_screen.dart';
 import 'package:firebaseauth/src/presentation/blocs/auth/auth_bloc.dart';
 import 'package:firebaseauth/src/presentation/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AuthScreen extends StatefulWidget {
-  const AuthScreen({Key? key}) : super(key: key);
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({Key? key}) : super(key: key);
 
   @override
-  State<AuthScreen> createState() => _AuthScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _AuthScreenState extends State<AuthScreen> {
-  late TextEditingController _emailController, _passwordController;
+class _SignUpScreenState extends State<SignUpScreen> {
+  late TextEditingController _nameController,
+      _emailController,
+      _passwordController;
 
+  String get name => _nameController.text;
   String get email => _emailController.text;
   String get password => _passwordController.text;
 
   @override
   void initState() {
+    _nameController = TextEditingController();
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
     super.initState();
@@ -26,6 +29,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -36,37 +40,34 @@ class _AuthScreenState extends State<AuthScreen> {
     return Scaffold(
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 20,
-          ),
+          padding: const EdgeInsets.all(8.0),
           child: Card(
             child: Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 40,
+                horizontal: 30,
+                vertical: 16,
               ),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
-                    controller: _emailController,
+                    controller: _nameController,
+                    decoration: const InputDecoration(labelText: 'Full name'),
                     textInputAction: TextInputAction.next,
-                    decoration: const InputDecoration(
-                      labelText: 'Email address',
-                    ),
                   ),
-                  const SizedBox(height: 20),
+                  TextField(
+                    controller: _emailController,
+                    decoration:
+                        const InputDecoration(labelText: 'Email address'),
+                    textInputAction: TextInputAction.next,
+                  ),
                   TextField(
                     controller: _passwordController,
+                    decoration: const InputDecoration(labelText: 'Password'),
                     textInputAction: TextInputAction.done,
-                    decoration: const InputDecoration(
-                      labelText: 'Password',
-                    ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   BlocConsumer<AuthBloc, AuthState>(
                     // buildWhen: (prev, current) => current is LoginLoading,
                     builder: (context, state) {
@@ -99,33 +100,20 @@ class _AuthScreenState extends State<AuthScreen> {
                       }
                     },
                   ),
+                  const SizedBox(height: 20),
                   SizedBox(
                     height: 50,
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         BlocProvider.of<AuthBloc>(context).add(
-                          LoginBtnPressed(email: email, password: password),
+                          RegisterBtnPressed(
+                              name: name, email: email, password: password),
                         );
                       },
-                      child: const Text('Login'),
+                      child: const Text('Register'),
                     ),
                   ),
-                  Center(
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const SignUpScreen()),
-                        );
-                      },
-                      child: const Text(
-                        'Don\'t have an account?Register',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  )
                 ],
               ),
             ),

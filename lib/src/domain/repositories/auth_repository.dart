@@ -8,5 +8,12 @@ abstract class AuthRepository {
     required String password,
   });
 
+  Future<Either<AppError, UserEntity>> signUpWithEmailAndPassword({
+    required String name,
+    required String email,
+    required String password,
+  });
+
   Future<Either<AppError, UserEntity>> getCurrentUser();
+  Future<Either<AppError, void>> logout();
 }

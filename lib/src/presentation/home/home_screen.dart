@@ -1,4 +1,7 @@
+import 'package:firebaseauth/src/presentation/auth/auth_screen.dart';
+import 'package:firebaseauth/src/presentation/blocs/app/app_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -8,14 +11,36 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       drawer: Drawer(
         child: Column(
-          children: const [
-            UserAccountsDrawerHeader(
-              accountName: Text('Khadga Bahadur Shrestha'),
-              accountEmail: Text('khadgalovecoding2016@gmail.com'),
+          children: [
+            BlocBuilder<AppBloc, AppState>(
+              builder: (context, state) {
+                if (state.authState == AuthenticationState.authenticated) {
+                  return UserAccountsDrawerHeader(
+                    accountName: Text('${state.user?.name}'),
+                    accountEmail: Text('${state.user?.email}'),
+                  );
+                }
+
+                return Container();
+              },
             ),
             ListTile(
-              title: Text('Sign Out'),
-              trailing: Icon(Icons.exit_to_app),
+              title: const Text('Sign Out'),
+              trailing: const Icon(Icons.exit_to_app),
+              onTap: () async {
+                context.read<AppBloc>().add(LogoutBtnPressed());
+              },
+            ),
+            BlocListener<AppBloc, AppState>(
+              listenWhen: (prev, current) =>
+                  current.authState == AuthenticationState.unauthenticated,
+              listener: (context, state) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AuthScreen()),
+                );
+              },
+              child: Container(),
             )
           ],
         ),
@@ -28,7 +53,10 @@ class HomeScreen extends StatelessWidget {
         title: const Text('Todos'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         child: ListView.builder(
           itemCount: 2,
           itemBuilder: (context, index) {
@@ -54,9 +82,6 @@ class TodoItem extends StatelessWidget {
           ListTile(
             title: Text('Learn Basic of Rust'),
             subtitle: Text('Explore basic program structure of rustlang'),
-            leading: CircleAvatar(
-              child: Icon(Icons.check),
-            ),
           ),
         ],
       ),
